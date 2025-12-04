@@ -18,13 +18,29 @@ df <- input_raw |>
          direction_num = ifelse(direction == "L", -1, 1), 
          number = as.numeric(substr(turn,2,length(turn))) * direction_num) |> 
   mutate(cumulative_total = start + cumsum(number)) |> 
-  mutate(cumulative_total = cumulative_total %% 100) 
+  mutate(cumulative_total_mod = cumulative_total %% 100) 
 
 
 
 zeros <- df |> 
-  filter(cumulative_total == 0 ) |> 
+  filter(cumulative_total_mod == 0 ) |> 
   summarise(zero_count = n())
 
 
 unique(zeros)
+
+
+
+# Part 2....
+
+
+df <- df |> 
+  mutate(
+    prev_total = lag(cumulative_total, default = start),
+    prev_clicks = prev_total %/% 100,
+    current_clicks = cumulative_total %/% 100,
+    passes_zero = abs(current_clicks - prev_clicks)
+  ) 
+
+
+sum(df$passes_zero) # 
