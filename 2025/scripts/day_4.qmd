@@ -1,0 +1,71 @@
+---
+title: "Day 4 AoC"
+format: html
+editor: source
+---
+
+## Day 4 Advent of Code
+
+
+```{r}
+
+library(tidyverse)
+
+nrow = nrow(read.table("2025/inputs/day_4_input.txt"))
+
+paper_matrix <- read.table("2025/inputs/day_4_input.txt", col.names = "paper_map") |> 
+  mutate(paper_map = str_split(paper_map, pattern = "")) |> 
+  unlist() |> 
+  matrix(byrow = T, nrow)
+
+forklift_positions <- which(paper_matrix == "@", arr.ind = T, useNames = F)
+
+
+# need to get the inside of the matrix so that dont have boundary errors
+
+# Vector to store counts
+num_adjacent <- integer(nrow(forklift_positions))
+
+
+for (k in 1:nrow(forklift_positions)) {
+  
+  
+  i <- forklift_positions[k,1]
+  j <- forklift_positions[k,2]
+  
+
+     
+  row_idx <- max(1, i-1) : min(nrow(paper_matrix), i+1)
+  col_idx <- max(1, j-1) : min(ncol(paper_matrix), j+1)
+  
+  neighbours_matrix <- paper_matrix[row_idx, col_idx, drop = FALSE]
+  
+  neighbours <- as.vector(neighbours_matrix)
+  
+  # count "@"
+  num_adjacent[k] <- sum(neighbours == "@") - 1 # Take one away as this is the one we are looking at 
+      
+
+  
+
+}
+
+
+
+candidates <- num_adjacent |> 
+  as.data.frame() |> 
+  mutate(fewer_than_4 = num_adjacent < 4) |> 
+  filter(fewer_than_4 == T) 
+
+
+
+
+```
+
+
+
+```{r}
+#| echo: false
+2 * 2
+```
+

@@ -190,3 +190,6 @@ cython_debug/
 
 .RData
 .Rproj.user/
+
+
+*.txt
