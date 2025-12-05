@@ -1,0 +1,70 @@
+---
+title: "day_3_aoc"
+format: html
+editor: visual
+---
+
+## Day 3 Advent of Code
+
+# R solution part 1
+
+```{r}
+
+library(tidyverse)
+
+
+input <- read.table("2025/inputs/day_3_input.txt", col.names = "bank", sep = ",", colClasses = "character" )
+
+
+# We need to work out the total output joltage for each battery bank
+# First find the largest digit in the string, then find the largest digit in the remaining string 
+
+# convert to strings...
+joltage <- input |> 
+  mutate(split = str_split(bank, pattern = "")) |> 
+  mutate(max_digit = map_int(split, ~ max(as.integer(.x[-length(.x)]))), 
+         max_pos   = map_int(split, ~ which(as.integer(.x) == max(as.integer(.x[-length(.x)])))[1])) |> 
+  # and now we want the second biggest digit...
+  mutate(second_biggest = map2_int(split, max_pos, ~ max(as.integer(.x[(.y+1):length(.x)])))) |> 
+  mutate(max_joltage = paste0(as.character(max_digit), as.character(second_biggest))) |> 
+  mutate(max_joltage = as.numeric(max_joltage))
+  
+
+sum(joltage$max_joltage)
+
+
+
+
+```
+
+# Python solution part 1
+
+```{python}
+file_path = "2025/inputs/day_3_input.txt"
+
+# Read in line by line with each line being a battery bank
+
+with open(file_path, "r") as file:
+    lines = file.readlines()
+ 
+ 
+# Make each line (representing a battery bank) into an integer 
+    
+digits = [[int(ch) for ch in line.strip()] for line in lines ]
+
+# Empty list for max joltage
+max_joltages = []
+  
+for bank_digits in digits:
+    max_digit = max(bank_digits[:-1])          # max excluding last
+    max_pos = bank_digits[:-1].index(max_digit)
+    second_biggest = max(bank_digits[max_pos+1:])
+    max_joltage = int(str(max_digit) + str(second_biggest))
+    max_joltages.append(max_joltage)
+
+# Sum
+result = sum(max_joltages)
+
+print(result)
+
+```
