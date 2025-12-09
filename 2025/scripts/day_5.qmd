@@ -1,0 +1,106 @@
+---
+title: "day_5"
+format: html
+editor: visual
+---
+# Day 5 Advent of Code
+
+
+```{r}
+library(tidyverse)
+
+input <- read.table("2025/inputs/day_5_input.txt")
+
+
+ranges <- input |> 
+  filter(str_detect(V1, "-"))
+
+
+ingredients <- input |> 
+  filter(!str_detect(V1, "-")) |> 
+  mutate(V1 = as.numeric(V1))
+
+ranges_split <- ranges |> 
+  mutate(start = as.numeric(str_extract(V1, "^[^-]+")), 
+         end = as.numeric(str_extract(V1, "(?<=-).+$"))) |> 
+  select(start, end)
+
+
+fresh_id <- c()
+
+
+
+for (i in 1:nrow(ingredients)){
+  
+  id <- ingredients[i,1]
+  
+  for (j in 1:nrow(ranges_split)){
+    
+    if  (ranges_split$start[j] <= id &&  ranges_split$end[j] >= id ){
+      fresh_id <- c(fresh_id, id)
+      
+    }
+    
+    
+  } 
+
+  
+}
+
+
+remove_duplicates <- fresh_id |> 
+  unique() 
+
+
+length(remove_duplicates)
+
+
+```
+
+--- Part Two ---
+
+
+Now the question becomes how many of the ingredient IDs are fresh? 
+E.g. what are all the numbers that are inbetween the start and the end of the ranges
+
+```{r}
+
+all_numbers <- ranges_split |> 
+  mutate(number_of_ids_in_range = end - start + 1)
+
+# But we need to account for the fact some ranges overlap! 
+
+
+ranges_sort <- ranges_split |> 
+  arrange(start)
+
+
+# merge overlapping ranges
+merged_ranges <- list()
+current_range <- ranges_sort[1, ]
+
+for (i in 2:nrow(ranges_sort)) {
+  if (ranges_sort$start[i] <= current_range$end) {
+    # overlap! extend the current end
+    current_range$end <- max(current_range$end, ranges_sort$end[i])
+  } else {
+    # no overlap, save current
+    merged_ranges <- append(merged_ranges, list(current_range))
+    current_range <- ranges_sort[i, ]
+  }
+}
+# add the last range
+merged_ranges <- append(merged_ranges, list(current_range))
+
+
+merged_ranges <- do.call(rbind, merged_ranges)
+
+all_numbers <- merged_ranges |> 
+  mutate(number_of_ids_in_range = end - start + 1)
+
+
+
+number_of_fresh <- sum(all_numbers$number_of_ids_in_range) 
+
+```
+
