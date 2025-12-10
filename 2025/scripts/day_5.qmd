@@ -3,8 +3,8 @@ title: "day_5"
 format: html
 editor: visual
 ---
-# Day 5 Advent of Code
 
+# Day 5 Advent of Code
 
 ```{r}
 library(tidyverse)
@@ -59,9 +59,7 @@ length(remove_duplicates)
 
 --- Part Two ---
 
-
-Now the question becomes how many of the ingredient IDs are fresh? 
-E.g. what are all the numbers that are inbetween the start and the end of the ranges
+Now the question becomes how many of the ingredient IDs are fresh? E.g. what are all the numbers that are inbetween the start and the end of the ranges
 
 ```{r}
 
@@ -103,4 +101,3 @@ all_numbers <- merged_ranges |>
 number_of_fresh <- sum(all_numbers$number_of_ids_in_range) 
 
 ```
-
